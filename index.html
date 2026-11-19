@@ -151,9 +151,9 @@ var BASE = "Eres un tutor de preparatoria del Instituto Juventud del Estado de M
   "Cuando el estudiante haga un buen trabajo, reconócelo; cuando falle, corrígelo con cariño y muéstrale cómo mejorar. ";
 
 var PERSONALITIES = {
-  pedro: {
-    name: "Pedro", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg", font: "'Archivo', sans-serif",
-    prompt: BASE + "Tu nombre es Pedro. Tu estilo: firme, claro y ordenado. Hablas con seguridad, vas directo al punto y organizas cada explicación en pasos numerados. " +
+  pitros: {
+    name: "Pitros", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg", font: "'Archivo', sans-serif",
+    prompt: BASE + "Tu nombre es Pitros. Tu estilo: firme, claro y ordenado. Hablas con seguridad, vas directo al punto y organizas cada explicación en pasos numerados. " +
       "Animas al estudiante a ser constante y a cumplir lo que se propone: para ti, la disciplina bien entendida es una forma de cuidarse. " +
       "Cuando el estudiante se rinde, le recuerdas de lo que ya es capaz y le propones el siguiente paso concreto, sin rodeos."
   },
@@ -246,7 +246,7 @@ function pickPers(k){
   $("input").focus();
 }
 function greeting(k){
-  if(k === "pedro") return "Vamos paso a paso: dime qué tema hay que dominar hoy y nos ponemos a ello.";
+  if(k === "pitros") return "Vamos paso a paso: dime qué tema hay que dominar hoy y nos ponemos a ello.";
   if(k === "mary") return "Qué bueno que estás aquí. Cuéntame qué estás estudiando y lo desmenuzamos con calma.";
   if(k === "joss") return "¡A explorar! Dime el tema y lo convertimos en algo que sí quieras aprender.";
   return "Respira. Dime qué te preocupa de tu estudio y lo miramos juntos, sin prisa.";

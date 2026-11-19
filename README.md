@@ -6,7 +6,7 @@ Ju-bits es una versión en miniatura de un tutor con inteligencia artificial par
 
 | Compañero | Personalidad | Color |
 |---|---|---|
-| **Pedro** | Fuerte y confiable | Verde |
+| **Pitros** | Fuerte y confiable | Verde |
 | **Mary** | Empática y erudita | Azul |
 | **Joss** | Creativo e innovador | Violeta |
 | **Iram** | Sabio y meditativo | Amarillo |
@@ -19,7 +19,7 @@ Los cuatro comparten la misma misión: ayudar a **estudiar y entender** — expl
 2. Elige tu motor: **Groq** o **Gemini**, y pega tu clave. ¿No tienes? Es gratis en ambos casos:
    - Groq: [console.groq.com/keys](https://console.groq.com/keys) — crea tu cuenta, pulsa **Create API Key** y cópiala (empieza con `gsk_`).
    - Gemini: [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — entra con tu cuenta de Google, pulsa **Create API key** y cópiala (empieza con `AIza`).
-3. Elige a tu compañero: Pedro, Mary, Joss o Iram.
+3. Elige a tu compañero: Pitros, Mary, Joss o Iram.
 4. Escribe tu duda o el tema que quieres estudiar.
 
 ## Privacidad
