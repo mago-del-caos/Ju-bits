@@ -15,6 +15,7 @@
   header .logo{font-size:1.6rem;font-weight:800;letter-spacing:.5px}
   header .logo span{color:var(--ij-celeste)}
   header .sub{font-size:.85rem;opacity:.9;width:100%}
+  header .lema{font-size:.85rem;font-style:italic;color:#FFD100;width:100%}
   main{max-width:760px;margin:0 auto;padding:20px 15px 40px}
   .card{background:var(--blanco);border-radius:16px;box-shadow:0 6px 15px rgba(0,0,0,.06);padding:22px;margin-bottom:18px}
   h2{margin:0 0 10px;font-size:1.25rem;color:var(--ij-azul)}
@@ -24,6 +25,7 @@
   input[type=password],input[type=text]{width:100%;padding:13px;border:1px solid var(--borde);border-radius:10px;font-size:1rem;background:var(--fondo)}
   button{cursor:pointer;border:none;border-radius:25px;padding:12px 22px;font-weight:700;font-size:1rem;background:var(--acc);color:#fff;transition:opacity .2s}
   button:hover{opacity:.88}
+  button:disabled{opacity:.55;cursor:wait}
   button.ghost{background:transparent;color:var(--acc);border:2px solid var(--acc);padding:9px 16px;font-size:.88rem}
   .err{color:#C21847;font-weight:700;min-height:20px;font-size:.9rem}
   .providers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
@@ -57,6 +59,7 @@
 <header>
   <div class="logo">Ju<span>-bits</span></div>
   <div class="sub">Tu compañero de estudio con IA · Instituto Juventud del Estado de México</div>
+  <div class="lema">«Hacer siempre y en todo lo mejor»</div>
 </header>
 
 <main>
@@ -73,17 +76,29 @@
     <input type="password" id="key" placeholder="gsk_..." autocomplete="off">
     <p class="muted" id="key-hint">¿No tienes clave? Consíguela gratis en <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> (crea tu cuenta, pulsa «Create API Key» y cópiala).</p>
     <p class="err" id="key-err"></p>
-    <button id="btn-key">Guardar y continuar</button>
+    <button id="btn-key">Probar clave y continuar</button>
   </section>
 
-  <!-- Pantalla 2: elegir personalidad -->
+  <!-- Pantalla 2: perfil del estudiante -->
+  <section id="screen-profile" class="card hidden">
+    <h2>Antes de empezar, preséntate</h2>
+    <p class="muted">Tu Ju-bit guardará estos datos <b>solo en tu navegador</b> para llamarte como te gusta y explicarte con ejemplos de lo que te interesa.</p>
+    <label for="prof-name">¿Cómo quieres que te llame?</label>
+    <input type="text" id="prof-name" placeholder="Ej.: Alex, Vale, El Profe Jr...." autocomplete="off" maxlength="40">
+    <label for="prof-interests">Algunos de tus intereses</label>
+    <input type="text" id="prof-interests" placeholder="Ej.: fútbol, videojuegos, música, anime, dibujo, ciencia..." autocomplete="off" maxlength="140">
+    <p class="err" id="prof-err"></p>
+    <button id="btn-profile">Guardar y elegir compañero</button>
+  </section>
+
+  <!-- Pantalla 3: elegir personalidad -->
   <section id="screen-pick" class="card hidden">
     <h2>¿Con quién quieres estudiar hoy?</h2>
     <p class="muted">Elige a tu Ju-bit. Puedes cambiarlo cuando quieras.</p>
     <div class="grid" id="pers-grid"></div>
   </section>
 
-  <!-- Pantalla 3: chat -->
+  <!-- Pantalla 4: chat -->
   <section id="screen-chat" class="card hidden">
     <div id="chat-head">
       <img id="chat-avatar" src="pedro.jpg" alt="Tu Ju-bit">
@@ -93,6 +108,7 @@
       </div>
       <div class="spacer"></div>
       <button class="ghost" id="btn-change-pers">Cambiar compañero</button>
+      <button class="ghost" id="btn-profile-edit">Mi perfil</button>
       <button class="ghost" id="btn-change-key">Cambiar clave</button>
     </div>
     <hr style="border:none;border-top:1px solid var(--borde);margin:14px 0">
@@ -128,7 +144,9 @@ var BASE = "Eres un tutor de preparatoria del Instituto Juventud del Estado de M
   "Tu misión es ayudarle a ESTUDIAR y ENTENDER: explica con claridad, en español y con lenguaje sencillo, paso a paso y con ejemplos cercanos a su vida. " +
   "Guía con preguntas para que el estudiante piense; si te pide resolver una tarea o un examen completo, explícale el procedimiento y resuélvelo CON él, no por él. " +
   "Sé breve cuando la duda sea breve y desarrolla cuando el tema lo pida. Si no sabes algo, dilo con honestidad. " +
-  "Trata al estudiante con respeto y cercanía, como lo haría un buen maestro del Instituto Juventud. ";
+  "Trata al estudiante con respeto y cercanía, como lo haría un buen maestro del Instituto Juventud. " +
+  "Actúas desde la Filosofía Josefina del Instituto Juventud, cuyo lema es «Hacer siempre y en todo lo mejor»: acompañas al estudiante con espíritu de familia — cercanía, paciencia y exigencia amable — y le ayudas a formar el hábito de hacer bien las cosas, también las pequeñas: constancia, honestidad, esfuerzo y servicio a los demás. " +
+  "Cuando el estudiante haga un buen trabajo, reconócelo; cuando falle, corrígelo con cariño y muéstrale cómo mejorar. ";
 
 var PERSONALITIES = {
   pedro: {
@@ -157,12 +175,14 @@ var PERSONALITIES = {
 var state = {
   provider: localStorage.getItem("jubits_provider") || "groq",
   key: localStorage.getItem("jubits_key") || "",
+  profile: null,
   pers: null, history: []
 };
+try{ state.profile = JSON.parse(localStorage.getItem("jubits_profile") || "null"); }catch(e){ state.profile = null; }
 
 function $(id){ return document.getElementById(id); }
 function show(id){
-  ["screen-key","screen-pick","screen-chat"].forEach(function(s){ $(s).classList.toggle("hidden", s !== id); });
+  ["screen-key","screen-profile","screen-pick","screen-chat"].forEach(function(s){ $(s).classList.toggle("hidden", s !== id); });
 }
 function setProvider(p){
   state.provider = p;
@@ -175,6 +195,15 @@ function setProvider(p){
 }
 function applyColor(){
   if(state.pers){ document.documentElement.style.setProperty("--acc", PERSONALITIES[state.pers].color); }
+}
+function profileContext(){
+  if(!state.profile) return "";
+  var s = " Al estudiante le gusta que lo llames " + state.profile.name + ".";
+  if(state.profile.interests) s += " Sus intereses: " + state.profile.interests + ". Tenlos presentes: úsalos en ejemplos, analogías y ánimos cuando vengan al caso, sin forzarlos en cada mensaje.";
+  return s;
+}
+function fullPrompt(k){
+  return PERSONALITIES[k].prompt + profileContext();
 }
 function buildGrid(){
   var grid = $("pers-grid"); grid.innerHTML = "";
@@ -198,7 +227,8 @@ function pickPers(k){
   $("chat-name").textContent = p.name;
   $("chat-trait").textContent = p.trait;
   $("msgs").innerHTML = "";
-  addMsg("bot", "Hola, soy " + p.name + ". " + greeting(k));
+  var hola = state.profile ? "¡Hola, " + state.profile.name + "! Soy " + p.name + ". " : "Hola, soy " + p.name + ". ";
+  addMsg("bot", hola + greeting(k));
   show("screen-chat");
   $("input").focus();
 }
@@ -215,6 +245,26 @@ function addMsg(who, text){
   $("msgs").scrollTop = $("msgs").scrollHeight;
   return d;
 }
+function netErr(e){
+  if(e && e.name === "TypeError") return "No hubo conexión con el proveedor. Revisa tu internet e inténtalo de nuevo; si sigue fallando, prueba con el otro proveedor en «Cambiar clave».";
+  return (e && e.message) || "Algo salió mal. Inténtalo de nuevo.";
+}
+
+async function testKey(){
+  if(state.provider === "gemini"){
+    var r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash", {
+      headers: { "x-goog-api-key": state.key }
+    });
+    if(r.status === 400 || r.status === 403) throw new Error("Gemini rechazó tu clave. Verifica que la copiaste completa desde Google AI Studio.");
+    if(!r.ok) throw new Error("Gemini respondió con error " + r.status + ". Inténtalo de nuevo en un momento.");
+  } else {
+    var r2 = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { "Authorization": "Bearer " + state.key }
+    });
+    if(r2.status === 401) throw new Error("Groq rechazó tu clave. Verifica que la copiaste completa desde la consola de Groq.");
+    if(!r2.ok) throw new Error("Groq respondió con error " + r2.status + ". Inténtalo de nuevo en un momento.");
+  }
+}
 
 async function askGroq(systemPrompt){
   var res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -230,6 +280,7 @@ async function askGroq(systemPrompt){
     if(res.status === 401) throw new Error("Tu clave de Groq no es válida. Revísala en «Cambiar clave».");
     throw new Error((data && data.error && data.error.message) || ("Error " + res.status));
   }
+  if(!data.choices || !data.choices[0] || !data.choices[0].message) throw new Error("Groq no devolvió respuesta. Inténtalo de nuevo.");
   return data.choices[0].message.content;
 }
 
@@ -252,6 +303,7 @@ async function askGemini(systemPrompt){
     if(/API_KEY_INVALID|API key not valid/i.test(em)) throw new Error("Tu clave de Gemini no es válida. Revísala en «Cambiar clave».");
     throw new Error(em);
   }
+  if(!data.candidates || !data.candidates[0] || !data.candidates[0].content) throw new Error("Gemini no devolvió respuesta esta vez. Reformula tu pregunta e inténtalo de nuevo.");
   return data.candidates[0].content.parts.map(function(p){ return p.text || ""; }).join("");
 }
 
@@ -264,20 +316,25 @@ async function send(){
   $("typing").textContent = PERSONALITIES[state.pers].name + " está pensando...";
   try{
     var reply = state.provider === "gemini"
-      ? await askGemini(PERSONALITIES[state.pers].prompt)
-      : await askGroq(PERSONALITIES[state.pers].prompt);
+      ? await askGemini(fullPrompt(state.pers))
+      : await askGroq(fullPrompt(state.pers));
     state.history.push({ role: "assistant", content: reply });
     addMsg("bot", reply);
   }catch(e){
-    addMsg("sys", "⚠ " + (e.message || "No hubo conexión. Revisa tu internet e inténtalo de nuevo."));
+    addMsg("sys", "⚠ " + netErr(e));
     state.history.pop();
   }
   $("typing").textContent = "";
 }
 
+function afterKey(){
+  if(state.profile){ buildGrid(); show("screen-pick"); }
+  else { show("screen-profile"); }
+}
+
 $("prov-groq").onclick = function(){ setProvider("groq"); };
 $("prov-gemini").onclick = function(){ setProvider("gemini"); };
-$("btn-key").onclick = function(){
+$("btn-key").onclick = async function(){
   var v = $("key").value.trim();
   var prov = PROVIDERS[state.provider];
   if(!v || v.indexOf(prov.prefix) !== 0){
@@ -286,17 +343,41 @@ $("btn-key").onclick = function(){
   }
   $("key-err").textContent = "";
   state.key = v;
+  var btn = $("btn-key");
+  btn.disabled = true; btn.textContent = "Probando tu clave...";
+  try{
+    await testKey();
+  }catch(e){
+    btn.disabled = false; btn.textContent = "Probar clave y continuar";
+    $("key-err").textContent = netErr(e);
+    return;
+  }
+  btn.disabled = false; btn.textContent = "Probar clave y continuar";
   localStorage.setItem("jubits_key", v);
   localStorage.setItem("jubits_provider", state.provider);
+  afterKey();
+};
+$("btn-profile").onclick = function(){
+  var n = $("prof-name").value.trim();
+  var i = $("prof-interests").value.trim();
+  if(!n){ $("prof-err").textContent = "Dime cómo quieres que te llame."; return; }
+  if(!i){ $("prof-err").textContent = "Cuéntame al menos un interés: con eso tus ejemplos se sienten tuyos."; return; }
+  $("prof-err").textContent = "";
+  state.profile = { name: n, interests: i };
+  localStorage.setItem("jubits_profile", JSON.stringify(state.profile));
   buildGrid(); show("screen-pick");
 };
 $("btn-send").onclick = send;
 $("input").addEventListener("keydown", function(e){ if(e.key === "Enter") send(); });
 $("btn-change-pers").onclick = function(){ buildGrid(); show("screen-pick"); };
+$("btn-profile-edit").onclick = function(){
+  if(state.profile){ $("prof-name").value = state.profile.name; $("prof-interests").value = state.profile.interests; }
+  show("screen-profile");
+};
 $("btn-change-key").onclick = function(){ setProvider(state.provider); $("key").value = state.key; show("screen-key"); };
 
 setProvider(state.provider);
-if(state.key){ $("key").value = state.key; buildGrid(); show("screen-pick"); } else { show("screen-key"); }
+if(state.key){ $("key").value = state.key; afterKey(); } else { show("screen-key"); }
 </script>
 </body>
 </html>
