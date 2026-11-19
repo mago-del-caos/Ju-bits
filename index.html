@@ -4,10 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ju-bits · Instituto Juventud del Estado de México</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=EB+Garamond:ital@0;1&family=Fredoka:wght@500;600&family=Lora:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root{
     --ij-azul:#032A60; --ij-celeste:#00A8FF; --fondo:#F5F7FA; --blanco:#FFFFFF;
     --texto:#1E293B; --texto-claro:#52637A; --borde:#E2E8F0; --acc:#032A60;
+    --font-chat:inherit;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--fondo);color:var(--texto)}
@@ -41,11 +45,11 @@
   .hidden{display:none!important}
   #chat-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   #chat-head img{width:52px;height:52px;border-radius:50%;object-fit:cover}
-  #chat-head .who{font-weight:800}
+  #chat-head .who{font-weight:800;font-family:var(--font-chat)}
   #chat-head .spacer{flex:1}
   #msgs{display:flex;flex-direction:column;gap:10px;min-height:280px;max-height:55vh;overflow-y:auto;padding:6px 2px}
   .msg{max-width:85%;padding:11px 14px;border-radius:14px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
-  .msg.bot{background:#EEF3F8;align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.bot{background:#EEF3F8;align-self:flex-start;border-bottom-left-radius:4px;font-family:var(--font-chat);font-size:1.02rem}
   .msg.user{background:var(--acc);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
   .msg.sys{background:#FFF7DB;align-self:center;font-size:.88rem;color:#6b5d00}
   #composer{display:flex;gap:8px;margin-top:12px}
@@ -66,11 +70,11 @@
   <!-- Pantalla 1: proveedor y clave -->
   <section id="screen-key" class="card">
     <h2>Primero, elige tu motor de IA y pega tu clave</h2>
-    <p>Ju-bits funciona con <b>tu propia clave gratuita</b>, de Groq o de Gemini, a tu elección. La clave se guarda <b>solo en tu navegador</b>: nunca sale de tu dispositivo hacia ningún servidor que no sea el del proveedor que elegiste.</p>
+    <p>Ju-bits funciona con <b>tu propia clave gratuita</b>, de Groq o de Gemini, a tu elección. La clave se guarda <b>solo en tu navegador</b>: nunca sale de tu dispositivo hacia ningún servidor que no sea el del proveedor que elegiste. Pégala tal cual la copiaste: la app la limpia sola si trae espacios o comillas.</p>
     <label>1 · Elige tu proveedor</label>
     <div class="providers">
-      <div class="prov sel" id="prov-groq">Groq<small>Rápido y gratuito · modelo Llama</small></div>
-      <div class="prov" id="prov-gemini">Gemini<small>De Google · modelo Gemini Flash</small></div>
+      <div class="prov sel" id="prov-groq">Groq<small>Rápido y gratuito · modelos Llama y más</small></div>
+      <div class="prov" id="prov-gemini">Gemini<small>De Google · modelos Gemini Flash</small></div>
     </div>
     <label for="key" id="key-label">2 · Tu clave de Groq (empieza con gsk_)</label>
     <input type="password" id="key" placeholder="gsk_..." autocomplete="off">
@@ -129,13 +133,11 @@ var PROVIDERS = {
   groq: {
     label: "Tu clave de Groq (empieza con gsk_)",
     placeholder: "gsk_...",
-    prefix: "gsk_",
     hint: '¿No tienes clave? Consíguela gratis en <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> (crea tu cuenta, pulsa «Create API Key» y cópiala).'
   },
   gemini: {
-    label: "Tu clave de Gemini (empieza con AIza)",
-    placeholder: "AIza...",
-    prefix: "AIza",
+    label: "Tu clave de Gemini (empieza con AIza o con AQ.)",
+    placeholder: "AIza... o AQ....",
     hint: '¿No tienes clave? Consíguela gratis en <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> (entra con tu cuenta de Google, pulsa «Create API key» y cópiala).'
   }
 };
@@ -150,23 +152,23 @@ var BASE = "Eres un tutor de preparatoria del Instituto Juventud del Estado de M
 
 var PERSONALITIES = {
   pedro: {
-    name: "Pedro", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg",
+    name: "Pedro", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg", font: "'Archivo', sans-serif",
     prompt: BASE + "Tu nombre es Pedro. Tu estilo: firme, claro y ordenado. Hablas con seguridad, vas directo al punto y organizas cada explicación en pasos numerados. " +
       "Animas al estudiante a ser constante y a cumplir lo que se propone: para ti, la disciplina bien entendida es una forma de cuidarse. " +
       "Cuando el estudiante se rinde, le recuerdas de lo que ya es capaz y le propones el siguiente paso concreto, sin rodeos."
   },
   mary: {
-    name: "Mary", trait: "Empática y erudita", color: "#2E7FA8", img: "mary.jpg",
+    name: "Mary", trait: "Empática y erudita", color: "#2E7FA8", img: "mary.jpg", font: "'Lora', serif",
     prompt: BASE + "Tu nombre es Mary. Tu estilo: cálido, paciente y muy culto. Escuchas primero cómo se siente el estudiante y luego explicas; conectas el tema con otros saberes, con libros, historia y cultura, porque sabes mucho y te gusta compartirlo. " +
       "Nunca haces sentir mal a nadie por no saber: cada duda es una puerta. Tus explicaciones fluyen con calma y dejan la sensación de que todo se puede comprender."
   },
   joss: {
-    name: "Joss", trait: "Creativo e innovador", color: "#8E6CC8", img: "joss.jpg",
+    name: "Joss", trait: "Creativo e innovador", color: "#8E6CC8", img: "joss.jpg", font: "'Fredoka', sans-serif",
     prompt: BASE + "Tu nombre es Joss. Tu estilo: creativo, juguetón e innovador. Explicas con analogías inesperadas, ejemplos de videojuegos, memes, deportes o música, y propones retos y miniproyectos para aprender haciendo. " +
       "Te encanta preguntar «¿y si lo intentamos de otra manera?». Tu energía es contagiosa: estudiar contigo se siente como explorar, no como cumplir."
   },
   iram: {
-    name: "Iram", trait: "Sabio y meditativo", color: "#F2B705", img: "iram.jpg",
+    name: "Iram", trait: "Sabio y meditativo", color: "#F2B705", img: "iram.jpg", font: "'EB Garamond', serif",
     prompt: BASE + "Tu nombre es Iram. Tu estilo: sereno, reflexivo y profundo. Hablas despacio, con frases medidas, y antes de dar una respuesta sueles devolver una buena pregunta que haga pensar al estudiante. " +
       "Te interesa que comprenda el fondo de las cosas, no solo la respuesta rápida. Cuando el estudiante está ansioso, le ayudas a respirar, ordenar sus ideas y avanzar con calma, un paso a la vez."
   }
@@ -175,7 +177,8 @@ var PERSONALITIES = {
 var state = {
   provider: localStorage.getItem("jubits_provider") || "groq",
   key: localStorage.getItem("jubits_key") || "",
-  groqModel: localStorage.getItem("jubits_groq_model") || "",
+  groqModels: null,
+  geminiModels: null,
   profile: null,
   pers: null, history: []
 };
@@ -194,8 +197,17 @@ function setProvider(p){
   $("key-hint").innerHTML = PROVIDERS[p].hint;
   $("key-err").textContent = "";
 }
+function extractKey(provider, raw){
+  var m = null;
+  if(provider === "gemini") m = (raw || "").match(/(?:AIza|AQ\.)[0-9A-Za-z\-_.]{25,}/);
+  else m = (raw || "").match(/gsk_[0-9A-Za-z\-_]{20,}/);
+  return m ? m[0] : "";
+}
 function applyColor(){
-  if(state.pers){ document.documentElement.style.setProperty("--acc", PERSONALITIES[state.pers].color); }
+  if(state.pers){
+    document.documentElement.style.setProperty("--acc", PERSONALITIES[state.pers].color);
+    document.documentElement.style.setProperty("--font-chat", PERSONALITIES[state.pers].font);
+  }
 }
 function profileContext(){
   if(!state.profile) return "";
@@ -246,45 +258,43 @@ function addMsg(who, text){
   $("msgs").scrollTop = $("msgs").scrollHeight;
   return d;
 }
+function typeMsg(text){
+  var d = addMsg("bot", "");
+  var i = 0;
+  var step = text.length > 900 ? 6 : (text.length > 400 ? 3 : 2);
+  var timer = setInterval(function(){
+    i = Math.min(text.length, i + step);
+    d.textContent = text.slice(0, i);
+    $("msgs").scrollTop = $("msgs").scrollHeight;
+    if(i >= text.length) clearInterval(timer);
+  }, 12);
+}
 function netErr(e){
   if(e && e.name === "TypeError") return "No hubo conexión con el proveedor. Revisa tu internet e inténtalo de nuevo; si sigue fallando, prueba con el otro proveedor en «Cambiar clave».";
   return (e && e.message) || "Algo salió mal. Inténtalo de nuevo.";
 }
+function cleanReply(t){
+  return (t || "").replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+}
 
+/* ---------- GROQ: descubrimiento de modelos de texto + cascada ---------- */
 var GROQ_PREFS = ["llama-3.3-70b-versatile", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.1-8b-instant", "qwen-qwq-32b", "gemma2-9b-it"];
-
-async function groqModelIds(){
+function isTextModel(id){
+  if(/whisper|tts|guard|embed|vision|compound|audio|asr|orpheus|rerank/i.test(id)) return false;
+  return /llama-3\.3|llama-3\.1|llama-4|gpt-oss|qwen|gemma|mixtral|deepseek|kimi/i.test(id);
+}
+async function groqCandidates(){
   var r = await fetch("https://api.groq.com/openai/v1/models", {
     headers: { "Authorization": "Bearer " + state.key }
   });
   if(r.status === 401) throw new Error("Groq rechazó tu clave. Verifica que la copiaste completa desde la consola de Groq.");
   if(!r.ok) throw new Error("Groq respondió con error " + r.status + ". Inténtalo de nuevo en un momento.");
   var d = await r.json();
-  return (d.data || []).map(function(m){ return m.id; });
-}
-function isTextModel(id){
-  if(/whisper|tts|guard|embed|vision|compound|audio|asr|orpheus|rerank/i.test(id)) return false;
-  return /llama-3\.3|llama-3\.1|llama-4|gpt-oss|qwen|gemma|mixtral|deepseek|kimi/i.test(id);
-}
-function pickGroqModel(ids, exclude){
-  var i, id;
-  for(i = 0; i < GROQ_PREFS.length; i++){
-    id = GROQ_PREFS[i];
-    if(ids.indexOf(id) >= 0 && id !== exclude) return id;
-  }
-  for(i = 0; i < ids.length; i++){
-    id = ids[i];
-    if(id !== exclude && isTextModel(id)) return id;
-  }
-  return "";
-}
-async function resolveGroqModel(exclude){
-  var ids = await groqModelIds();
-  var m = pickGroqModel(ids, exclude || "");
-  if(!m) throw new Error("Tu cuenta de Groq no muestra un modelo de chat disponible. Prueba con Gemini en «Cambiar clave».");
-  state.groqModel = m;
-  localStorage.setItem("jubits_groq_model", m);
-  return m;
+  var ids = (d.data || []).map(function(m){ return m.id; }).filter(isTextModel);
+  var ordered = [];
+  GROQ_PREFS.forEach(function(p){ if(ids.indexOf(p) >= 0) ordered.push(p); });
+  ids.forEach(function(id){ if(ordered.indexOf(id) < 0) ordered.push(id); });
+  return ordered;
 }
 async function groqComplete(model, messages, maxTokens){
   var body = { model: model, temperature: 0.7, messages: messages };
@@ -298,72 +308,132 @@ async function groqComplete(model, messages, maxTokens){
   try{ data = await res.json(); }catch(e){ data = null; }
   return { res: res, data: data };
 }
-function isModelErr(res, data){
+function groqSkippable(res, data){
   var em = (data && data.error && data.error.message) || "";
-  return res.status === 404 || /does not exist|model_not_found|not found/i.test(em);
+  return res.status === 404 || res.status === 400 || res.status === 429 || /does not exist|model_not_found/i.test(em);
 }
-
-async function testKey(){
-  if(state.provider === "gemini"){
-    var r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash", {
-      headers: { "x-goog-api-key": state.key }
-    });
-    if(r.status === 400 || r.status === 403) throw new Error("Gemini rechazó tu clave. Verifica que la copiaste completa desde Google AI Studio.");
-    if(!r.ok) throw new Error("Gemini respondió con error " + r.status + ". Inténtalo de nuevo en un momento.");
-  } else {
-    var ids = await groqModelIds();
-    var tried = "";
-    for(var attempt = 0; attempt < 3; attempt++){
-      var m = pickGroqModel(ids, tried);
-      if(!m) break;
-      var out = await groqComplete(m, [{ role: "user", content: "Di hola" }], 1);
-      if(out.res.ok){ state.groqModel = m; localStorage.setItem("jubits_groq_model", m); return; }
-      if(out.res.status === 401) throw new Error("Groq rechazó tu clave. Verifica que la copiaste completa desde la consola de Groq.");
-      if(isModelErr(out.res, out.data)){ tried = m; continue; }
-      throw new Error((out.data && out.data.error && out.data.error.message) || ("Error " + out.res.status));
-    }
-    throw new Error("Ningún modelo de tu cuenta de Groq respondió. Prueba con Gemini en «Cambiar clave».");
-  }
-}
-
 async function askGroq(systemPrompt){
-  if(!state.groqModel) await resolveGroqModel("");
+  if(!state.groqModels) state.groqModels = await groqCandidates();
+  if(!state.groqModels.length) throw new Error("Tu cuenta de Groq no muestra un modelo de chat de texto disponible. Prueba con Gemini en «Cambiar clave».");
   var messages = [{ role: "system", content: systemPrompt }].concat(state.history);
-  var out = await groqComplete(state.groqModel, messages, 0);
-  if(!out.res.ok && isModelErr(out.res, out.data)){
-    await resolveGroqModel(state.groqModel);
-    out = await groqComplete(state.groqModel, messages, 0);
-  }
-  if(!out.res.ok){
+  var lastErr = null;
+  for(var i = 0; i < state.groqModels.length && i < 4; i++){
+    var out = await groqComplete(state.groqModels[i], messages, 0);
+    if(out.res.ok){
+      var data = out.data;
+      if(data && data.choices && data.choices[0] && data.choices[0].message) return data.choices[0].message.content;
+      lastErr = new Error("Groq no devolvió respuesta. Inténtalo de nuevo.");
+      continue;
+    }
     if(out.res.status === 401) throw new Error("Tu clave de Groq no es válida. Revísala en «Cambiar clave».");
+    if(groqSkippable(out.res, out.data)){
+      lastErr = new Error((out.data && out.data.error && out.data.error.message) || ("Error " + out.res.status));
+      continue;
+    }
     throw new Error((out.data && out.data.error && out.data.error.message) || ("Error " + out.res.status));
   }
-  var data = out.data;
-  if(!data || !data.choices || !data.choices[0] || !data.choices[0].message) throw new Error("Groq no devolvió respuesta. Inténtalo de nuevo.");
-  return data.choices[0].message.content;
+  throw lastErr || new Error("Ningún modelo de Groq respondió. Inténtalo de nuevo en un momento.");
 }
 
-async function askGemini(systemPrompt){
-  var contents = state.history.map(function(m){
+/* ---------- GEMINI: descubrimiento de modelos de texto + cascada ---------- */
+var GEMINI_PREFS = ["gemini-flash-lite-latest", "gemini-flash-latest", "gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"];
+function geminiBad(id){
+  return /tts|image|audio|whisper|guard|embed|vision|lyria|veo|imagen|computer-use|robotics|aqa/i.test(id);
+}
+async function geminiCandidates(){
+  var r = await fetch("https://generativelanguage.googleapis.com/v1beta/models", {
+    headers: { "x-goog-api-key": state.key }
+  });
+  if(r.status === 400 || r.status === 403) throw new Error("Gemini rechazó tu clave. Verifica que la copiaste completa desde Google AI Studio.");
+  if(!r.ok) throw new Error("Gemini respondió con error " + r.status + ". Inténtalo de nuevo en un momento.");
+  var d = await r.json();
+  var usable = (d.models || []).filter(function(m){
+    var id = (m.name || "").replace(/^models\//, "");
+    var methods = m.supportedGenerationMethods || [];
+    return methods.indexOf("generateContent") >= 0 && !geminiBad(id);
+  }).map(function(m){ return (m.name || "").replace(/^models\//, ""); });
+  var ordered = [];
+  GEMINI_PREFS.forEach(function(p){ if(usable.indexOf(p) >= 0) ordered.push(p); });
+  usable.forEach(function(id){ if(ordered.indexOf(id) < 0) ordered.push(id); });
+  return ordered;
+}
+async function geminiOnce(model, systemPrompt, contentsOverride){
+  var contents = contentsOverride || state.history.map(function(m){
     return { role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] };
   });
-  var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+  var body = { contents: contents, generationConfig: { temperature: 0.7 } };
+  if(/gemma/i.test(model)){
+    if(contents.length && contents[0].role === "user"){
+      var first = contents[0];
+      var merged = [{ text: systemPrompt + "\n\n" + (first.parts[0] ? first.parts[0].text : "") }].concat(first.parts.slice(1));
+      var copy = contents.slice();
+      copy[0] = { role: "user", parts: merged };
+      body.contents = copy;
+    }
+  } else {
+    body.systemInstruction = { parts: [{ text: systemPrompt }] };
+  }
+  var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent", {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": state.key },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      contents: contents,
-      generationConfig: { temperature: 0.7 }
-    })
+    body: JSON.stringify(body)
   });
-  var data = await res.json();
+  var data = null;
+  try{ data = await res.json(); }catch(e){ data = null; }
   if(!res.ok){
     var em = (data && data.error && data.error.message) || ("Error " + res.status);
-    if(/API_KEY_INVALID|API key not valid/i.test(em)) throw new Error("Tu clave de Gemini no es válida. Revísala en «Cambiar clave».");
-    throw new Error(em);
+    var err = new Error(em);
+    if(res.status === 401 || res.status === 403 || /API_KEY_INVALID|API key not valid/i.test(em)){
+      err.message = "Tu clave de Gemini no es válida. Revísala en «Cambiar clave».";
+      err.fatal = true;
+    }
+    throw err;
   }
-  if(!data.candidates || !data.candidates[0] || !data.candidates[0].content) throw new Error("Gemini no devolvió respuesta esta vez. Reformula tu pregunta e inténtalo de nuevo.");
+  if(!data || !data.candidates || !data.candidates[0] || !data.candidates[0].content) throw new Error("Gemini no devolvió respuesta esta vez.");
   return data.candidates[0].content.parts.map(function(p){ return p.text || ""; }).join("");
+}
+async function askGemini(systemPrompt){
+  if(!state.geminiModels) state.geminiModels = await geminiCandidates();
+  if(!state.geminiModels.length) throw new Error("Tu cuenta de Gemini no muestra un modelo de chat de texto disponible. Prueba con Groq en «Cambiar clave».");
+  var lastErr = null;
+  for(var i = 0; i < state.geminiModels.length && i < 4; i++){
+    try{
+      return await geminiOnce(state.geminiModels[i], systemPrompt, null);
+    }catch(e){
+      if(e.fatal) throw e;
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("Ningún modelo de Gemini respondió. Inténtalo de nuevo en un momento.");
+}
+
+/* ---------- Prueba de clave: descubrimiento + llamada real mínima ---------- */
+async function testKey(){
+  if(state.provider === "gemini"){
+    var cands = await geminiCandidates();
+    if(!cands.length) throw new Error("Tu cuenta de Gemini no muestra un modelo de chat de texto disponible. Prueba con Groq.");
+    var testContents = [{ role: "user", parts: [{ text: "Di hola" }] }];
+    var lastErr = null;
+    for(var i = 0; i < cands.length && i < 3; i++){
+      try{
+        await geminiOnce(cands[i], "Eres un asistente breve y amable.", testContents);
+        state.geminiModels = cands;
+        return;
+      }catch(e){ if(e.fatal) throw e; lastErr = e; }
+    }
+    throw lastErr || new Error("Ningún modelo de Gemini respondió a la prueba.");
+  }
+  var gcands = await groqCandidates();
+  if(!gcands.length) throw new Error("Tu cuenta de Groq no muestra un modelo de chat de texto disponible. Prueba con Gemini.");
+  var gErr = null;
+  for(var j = 0; j < gcands.length && j < 3; j++){
+    var out = await groqComplete(gcands[j], [{ role: "user", content: "Di hola" }], 1);
+    if(out.res.ok){ state.groqModels = gcands; return; }
+    if(out.res.status === 401) throw new Error("Groq rechazó tu clave. Verifica que la copiaste completa desde la consola de Groq.");
+    if(groqSkippable(out.res, out.data)){ gErr = new Error((out.data && out.data.error && out.data.error.message) || ("Error " + out.res.status)); continue; }
+    throw new Error((out.data && out.data.error && out.data.error.message) || ("Error " + out.res.status));
+  }
+  throw gErr || new Error("Ningún modelo de Groq respondió a la prueba.");
 }
 
 async function send(){
@@ -374,16 +444,19 @@ async function send(){
   state.history.push({ role: "user", content: text });
   $("typing").textContent = PERSONALITIES[state.pers].name + " está pensando...";
   try{
-    var reply = state.provider === "gemini"
+    var raw = state.provider === "gemini"
       ? await askGemini(fullPrompt(state.pers))
       : await askGroq(fullPrompt(state.pers));
+    var reply = cleanReply(raw);
+    if(!reply) reply = "Perdón, me quedé en blanco. ¿Me lo preguntas de otra forma?";
     state.history.push({ role: "assistant", content: reply });
-    addMsg("bot", reply);
+    $("typing").textContent = "";
+    typeMsg(reply);
   }catch(e){
+    $("typing").textContent = "";
     addMsg("sys", "⚠ " + netErr(e));
     state.history.pop();
   }
-  $("typing").textContent = "";
 }
 
 function afterKey(){
@@ -394,14 +467,18 @@ function afterKey(){
 $("prov-groq").onclick = function(){ setProvider("groq"); };
 $("prov-gemini").onclick = function(){ setProvider("gemini"); };
 $("btn-key").onclick = async function(){
-  var v = $("key").value.trim();
-  var prov = PROVIDERS[state.provider];
-  if(!v || v.indexOf(prov.prefix) !== 0){
-    $("key-err").textContent = "Escribe una clave válida de " + (state.provider === "groq" ? "Groq" : "Gemini") + " (empieza con " + prov.prefix + ").";
+  var v = extractKey(state.provider, $("key").value);
+  if(!v){
+    $("key-err").textContent = state.provider === "gemini"
+      ? "No encontré una clave válida en lo que pegaste. Copia la clave completa de Gemini (empieza con AIza o con AQ.)."
+      : "No encontré una clave válida en lo que pegaste. Copia la clave completa de Groq (empieza con gsk_).";
     return;
   }
   $("key-err").textContent = "";
+  $("key").value = v;
   state.key = v;
+  state.groqModels = null;
+  state.geminiModels = null;
   var btn = $("btn-key");
   btn.disabled = true; btn.textContent = "Probando tu clave...";
   try{
