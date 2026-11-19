@@ -175,6 +175,7 @@ var PERSONALITIES = {
 var state = {
   provider: localStorage.getItem("jubits_provider") || "groq",
   key: localStorage.getItem("jubits_key") || "",
+  groqModel: localStorage.getItem("jubits_groq_model") || "",
   profile: null,
   pers: null, history: []
 };
@@ -250,6 +251,54 @@ function netErr(e){
   return (e && e.message) || "Algo salió mal. Inténtalo de nuevo.";
 }
 
+var GROQ_PREFS = ["llama-3.3-70b-versatile", "openai/gpt-oss-120b", "openai/gpt-oss-20b", "llama-3.1-8b-instant", "qwen-qwq-32b", "gemma2-9b-it"];
+
+async function groqModelIds(){
+  var r = await fetch("https://api.groq.com/openai/v1/models", {
+    headers: { "Authorization": "Bearer " + state.key }
+  });
+  if(r.status === 401) throw new Error("Groq rechazó tu clave. Verifica que la copiaste completa desde la consola de Groq.");
+  if(!r.ok) throw new Error("Groq respondió con error " + r.status + ". Inténtalo de nuevo en un momento.");
+  var d = await r.json();
+  return (d.data || []).map(function(m){ return m.id; });
+}
+function pickGroqModel(ids, exclude){
+  var i, id;
+  for(i = 0; i < GROQ_PREFS.length; i++){
+    id = GROQ_PREFS[i];
+    if(ids.indexOf(id) >= 0 && id !== exclude) return id;
+  }
+  for(i = 0; i < ids.length; i++){
+    id = ids[i];
+    if(id !== exclude && !/whisper|tts|guard|embed|vision/i.test(id)) return id;
+  }
+  return "";
+}
+async function resolveGroqModel(exclude){
+  var ids = await groqModelIds();
+  var m = pickGroqModel(ids, exclude || "");
+  if(!m) throw new Error("Tu cuenta de Groq no muestra un modelo de chat disponible. Prueba con Gemini en «Cambiar clave».");
+  state.groqModel = m;
+  localStorage.setItem("jubits_groq_model", m);
+  return m;
+}
+async function groqComplete(model, messages, maxTokens){
+  var body = { model: model, temperature: 0.7, messages: messages };
+  if(maxTokens) body.max_tokens = maxTokens;
+  var res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + state.key },
+    body: JSON.stringify(body)
+  });
+  var data = null;
+  try{ data = await res.json(); }catch(e){ data = null; }
+  return { res: res, data: data };
+}
+function isModelErr(res, data){
+  var em = (data && data.error && data.error.message) || "";
+  return res.status === 404 || /does not exist|model_not_found|not found/i.test(em);
+}
+
 async function testKey(){
   if(state.provider === "gemini"){
     var r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash", {
@@ -258,29 +307,35 @@ async function testKey(){
     if(r.status === 400 || r.status === 403) throw new Error("Gemini rechazó tu clave. Verifica que la copiaste completa desde Google AI Studio.");
     if(!r.ok) throw new Error("Gemini respondió con error " + r.status + ". Inténtalo de nuevo en un momento.");
   } else {
-    var r2 = await fetch("https://api.groq.com/openai/v1/models", {
-      headers: { "Authorization": "Bearer " + state.key }
-    });
-    if(r2.status === 401) throw new Error("Groq rechazó tu clave. Verifica que la copiaste completa desde la consola de Groq.");
-    if(!r2.ok) throw new Error("Groq respondió con error " + r2.status + ". Inténtalo de nuevo en un momento.");
+    var ids = await groqModelIds();
+    var tried = "";
+    for(var attempt = 0; attempt < 3; attempt++){
+      var m = pickGroqModel(ids, tried);
+      if(!m) break;
+      var out = await groqComplete(m, [{ role: "user", content: "Di hola" }], 1);
+      if(out.res.ok){ state.groqModel = m; localStorage.setItem("jubits_groq_model", m); return; }
+      if(out.res.status === 401) throw new Error("Groq rechazó tu clave. Verifica que la copiaste completa desde la consola de Groq.");
+      if(isModelErr(out.res, out.data)){ tried = m; continue; }
+      throw new Error((out.data && out.data.error && out.data.error.message) || ("Error " + out.res.status));
+    }
+    throw new Error("Ningún modelo de tu cuenta de Groq respondió. Prueba con Gemini en «Cambiar clave».");
   }
 }
 
 async function askGroq(systemPrompt){
-  var res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + state.key },
-    body: JSON.stringify({
-      model: "llama-3.1-8b-instant", temperature: 0.7,
-      messages: [{ role: "system", content: systemPrompt }].concat(state.history)
-    })
-  });
-  var data = await res.json();
-  if(!res.ok){
-    if(res.status === 401) throw new Error("Tu clave de Groq no es válida. Revísala en «Cambiar clave».");
-    throw new Error((data && data.error && data.error.message) || ("Error " + res.status));
+  if(!state.groqModel) await resolveGroqModel("");
+  var messages = [{ role: "system", content: systemPrompt }].concat(state.history);
+  var out = await groqComplete(state.groqModel, messages, 0);
+  if(!out.res.ok && isModelErr(out.res, out.data)){
+    await resolveGroqModel(state.groqModel);
+    out = await groqComplete(state.groqModel, messages, 0);
   }
-  if(!data.choices || !data.choices[0] || !data.choices[0].message) throw new Error("Groq no devolvió respuesta. Inténtalo de nuevo.");
+  if(!out.res.ok){
+    if(out.res.status === 401) throw new Error("Tu clave de Groq no es válida. Revísala en «Cambiar clave».");
+    throw new Error((out.data && out.data.error && out.data.error.message) || ("Error " + out.res.status));
+  }
+  var data = out.data;
+  if(!data || !data.choices || !data.choices[0] || !data.choices[0].message) throw new Error("Groq no devolvió respuesta. Inténtalo de nuevo.");
   return data.choices[0].message.content;
 }
 
