@@ -57,6 +57,9 @@
   .typing{font-style:italic;color:var(--texto-claro);font-size:.9rem;min-height:20px}
   footer{text-align:center;color:var(--texto-claro);font-size:.82rem;padding:0 15px 25px}
   a{color:var(--ij-azul);font-weight:700}
+  .banner{width:100%;height:150px;object-fit:cover;object-position:center 30%;border-radius:16px;display:block;margin-bottom:18px;box-shadow:0 6px 15px rgba(0,0,0,.08)}
+  @media(max-width:600px){ .banner{height:105px} }
+  a.backlink{display:inline-block;border:2px solid var(--ij-azul);color:var(--ij-azul);border-radius:25px;padding:9px 18px;font-weight:700;text-decoration:none;font-size:.9rem;background:var(--blanco)}
 </style>
 </head>
 <body>
@@ -67,6 +70,7 @@
 </header>
 
 <main>
+  <img class="banner" src="banner.jpg" alt="Pitros, Mary, Joss e Iram estudiando juntos">
   <!-- Pantalla 1: proveedor y clave -->
   <section id="screen-key" class="card">
     <h2>Primero, elige tu motor de IA y pega tu clave</h2>
@@ -100,6 +104,9 @@
     <h2>¿Con quién quieres estudiar hoy?</h2>
     <p class="muted">Elige a tu Ju-bit. Puedes cambiarlo cuando quieras.</p>
     <div class="grid" id="pers-grid"></div>
+    <div style="text-align:center;margin-top:18px">
+      <a class="backlink" href="https://mago-del-caos.github.io/Agenda/agenda.html">⟵ Regresar a la Agenda</a>
+    </div>
   </section>
 
   <!-- Pantalla 4: chat -->
