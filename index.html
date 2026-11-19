@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ju-bits · Instituto Juventud del Estado de México</title>
+<style>
+  :root{
+    --ij-azul:#032A60; --ij-celeste:#00A8FF; --fondo:#F5F7FA; --blanco:#FFFFFF;
+    --texto:#1E293B; --texto-claro:#52637A; --borde:#E2E8F0; --acc:#032A60;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--fondo);color:var(--texto)}
+  header{background:var(--ij-azul);color:#fff;padding:14px 18px;border-bottom:5px solid #FFD100;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  header .logo{font-size:1.6rem;font-weight:800;letter-spacing:.5px}
+  header .logo span{color:var(--ij-celeste)}
+  header .sub{font-size:.85rem;opacity:.9;width:100%}
+  main{max-width:760px;margin:0 auto;padding:20px 15px 40px}
+  .card{background:var(--blanco);border-radius:16px;box-shadow:0 6px 15px rgba(0,0,0,.06);padding:22px;margin-bottom:18px}
+  h2{margin:0 0 10px;font-size:1.25rem;color:var(--ij-azul)}
+  p{line-height:1.5}
+  .muted{color:var(--texto-claro);font-size:.92rem}
+  label{font-weight:700;font-size:.92rem;display:block;margin:14px 0 6px}
+  input[type=password],input[type=text]{width:100%;padding:13px;border:1px solid var(--borde);border-radius:10px;font-size:1rem;background:var(--fondo)}
+  button{cursor:pointer;border:none;border-radius:25px;padding:12px 22px;font-weight:700;font-size:1rem;background:var(--acc);color:#fff;transition:opacity .2s}
+  button:hover{opacity:.88}
+  button.ghost{background:transparent;color:var(--acc);border:2px solid var(--acc);padding:9px 16px;font-size:.88rem}
+  .err{color:#C21847;font-weight:700;min-height:20px;font-size:.9rem}
+  .providers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+  .prov{border:3px solid var(--borde);border-radius:14px;padding:14px;text-align:center;cursor:pointer;font-weight:800;font-size:1.05rem;background:var(--blanco)}
+  .prov small{display:block;font-weight:400;color:var(--texto-claro);font-size:.82rem;margin-top:3px}
+  .prov.sel{border-color:var(--ij-azul);background:#EEF3F8}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:8px}
+  .pers{border:3px solid var(--borde);border-radius:16px;padding:18px 12px;text-align:center;cursor:pointer;background:var(--blanco);transition:transform .15s,border-color .15s}
+  .pers:hover{transform:translateY(-3px)}
+  .pers img{width:84px;height:84px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block}
+  .pers .name{font-weight:800;font-size:1.1rem}
+  .pers .trait{color:var(--texto-claro);font-size:.88rem;margin-top:2px}
+  .hidden{display:none!important}
+  #chat-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  #chat-head img{width:52px;height:52px;border-radius:50%;object-fit:cover}
+  #chat-head .who{font-weight:800}
+  #chat-head .spacer{flex:1}
+  #msgs{display:flex;flex-direction:column;gap:10px;min-height:280px;max-height:55vh;overflow-y:auto;padding:6px 2px}
+  .msg{max-width:85%;padding:11px 14px;border-radius:14px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+  .msg.bot{background:#EEF3F8;align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.user{background:var(--acc);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+  .msg.sys{background:#FFF7DB;align-self:center;font-size:.88rem;color:#6b5d00}
+  #composer{display:flex;gap:8px;margin-top:12px}
+  #composer input{flex:1}
+  .typing{font-style:italic;color:var(--texto-claro);font-size:.9rem;min-height:20px}
+  footer{text-align:center;color:var(--texto-claro);font-size:.82rem;padding:0 15px 25px}
+  a{color:var(--ij-azul);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Ju<span>-bits</span></div>
+  <div class="sub">Tu compañero de estudio con IA · Instituto Juventud del Estado de México</div>
+</header>
+
+<main>
+  <!-- Pantalla 1: proveedor y clave -->
+  <section id="screen-key" class="card">
+    <h2>Primero, elige tu motor de IA y pega tu clave</h2>
+    <p>Ju-bits funciona con <b>tu propia clave gratuita</b>, de Groq o de Gemini, a tu elección. La clave se guarda <b>solo en tu navegador</b>: nunca sale de tu dispositivo hacia ningún servidor que no sea el del proveedor que elegiste.</p>
+    <label>1 · Elige tu proveedor</label>
+    <div class="providers">
+      <div class="prov sel" id="prov-groq">Groq<small>Rápido y gratuito · modelo Llama</small></div>
+      <div class="prov" id="prov-gemini">Gemini<small>De Google · modelo Gemini Flash</small></div>
+    </div>
+    <label for="key" id="key-label">2 · Tu clave de Groq (empieza con gsk_)</label>
+    <input type="password" id="key" placeholder="gsk_..." autocomplete="off">
+    <p class="muted" id="key-hint">¿No tienes clave? Consíguela gratis en <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> (crea tu cuenta, pulsa «Create API Key» y cópiala).</p>
+    <p class="err" id="key-err"></p>
+    <button id="btn-key">Guardar y continuar</button>
+  </section>
+
+  <!-- Pantalla 2: elegir personalidad -->
+  <section id="screen-pick" class="card hidden">
+    <h2>¿Con quién quieres estudiar hoy?</h2>
+    <p class="muted">Elige a tu Ju-bit. Puedes cambiarlo cuando quieras.</p>
+    <div class="grid" id="pers-grid"></div>
+  </section>
+
+  <!-- Pantalla 3: chat -->
+  <section id="screen-chat" class="card hidden">
+    <div id="chat-head">
+      <img id="chat-avatar" src="pedro.jpg" alt="Tu Ju-bit">
+      <div>
+        <div class="who" id="chat-name">—</div>
+        <div class="muted" id="chat-trait">—</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="ghost" id="btn-change-pers">Cambiar compañero</button>
+      <button class="ghost" id="btn-change-key">Cambiar clave</button>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--borde);margin:14px 0">
+    <div id="msgs"></div>
+    <div class="typing" id="typing"></div>
+    <div id="composer">
+      <input type="text" id="input" placeholder="Escribe tu duda o el tema que quieres estudiar...">
+      <button id="btn-send">Enviar</button>
+    </div>
+  </section>
+</main>
+
+<footer>Ju-bits · Proyecto educativo del Instituto Juventud del Estado de México · Construirse es construir el mundo.</footer>
+
+<script>
+"use strict";
+var PROVIDERS = {
+  groq: {
+    label: "Tu clave de Groq (empieza con gsk_)",
+    placeholder: "gsk_...",
+    prefix: "gsk_",
+    hint: '¿No tienes clave? Consíguela gratis en <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> (crea tu cuenta, pulsa «Create API Key» y cópiala).'
+  },
+  gemini: {
+    label: "Tu clave de Gemini (empieza con AIza)",
+    placeholder: "AIza...",
+    prefix: "AIza",
+    hint: '¿No tienes clave? Consíguela gratis en <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> (entra con tu cuenta de Google, pulsa «Create API key» y cópiala).'
+  }
+};
+
+var BASE = "Eres un tutor de preparatoria del Instituto Juventud del Estado de México que atiende a un estudiante dentro de Ju-bits. " +
+  "Tu misión es ayudarle a ESTUDIAR y ENTENDER: explica con claridad, en español y con lenguaje sencillo, paso a paso y con ejemplos cercanos a su vida. " +
+  "Guía con preguntas para que el estudiante piense; si te pide resolver una tarea o un examen completo, explícale el procedimiento y resuélvelo CON él, no por él. " +
+  "Sé breve cuando la duda sea breve y desarrolla cuando el tema lo pida. Si no sabes algo, dilo con honestidad. " +
+  "Trata al estudiante con respeto y cercanía, como lo haría un buen maestro del Instituto Juventud. ";
+
+var PERSONALITIES = {
+  pedro: {
+    name: "Pedro", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg",
+    prompt: BASE + "Tu nombre es Pedro. Tu estilo: firme, claro y ordenado. Hablas con seguridad, vas directo al punto y organizas cada explicación en pasos numerados. " +
+      "Animas al estudiante a ser constante y a cumplir lo que se propone: para ti, la disciplina bien entendida es una forma de cuidarse. " +
+      "Cuando el estudiante se rinde, le recuerdas de lo que ya es capaz y le propones el siguiente paso concreto, sin rodeos."
+  },
+  mary: {
+    name: "Mary", trait: "Empática y erudita", color: "#2E7FA8", img: "mary.jpg",
+    prompt: BASE + "Tu nombre es Mary. Tu estilo: cálido, paciente y muy culto. Escuchas primero cómo se siente el estudiante y luego explicas; conectas el tema con otros saberes, con libros, historia y cultura, porque sabes mucho y te gusta compartirlo. " +
+      "Nunca haces sentir mal a nadie por no saber: cada duda es una puerta. Tus explicaciones fluyen con calma y dejan la sensación de que todo se puede comprender."
+  },
+  joss: {
+    name: "Joss", trait: "Creativo e innovador", color: "#8E6CC8", img: "joss.jpg",
+    prompt: BASE + "Tu nombre es Joss. Tu estilo: creativo, juguetón e innovador. Explicas con analogías inesperadas, ejemplos de videojuegos, memes, deportes o música, y propones retos y miniproyectos para aprender haciendo. " +
+      "Te encanta preguntar «¿y si lo intentamos de otra manera?». Tu energía es contagiosa: estudiar contigo se siente como explorar, no como cumplir."
+  },
+  iram: {
+    name: "Iram", trait: "Sabio y meditativo", color: "#F2B705", img: "iram.jpg",
+    prompt: BASE + "Tu nombre es Iram. Tu estilo: sereno, reflexivo y profundo. Hablas despacio, con frases medidas, y antes de dar una respuesta sueles devolver una buena pregunta que haga pensar al estudiante. " +
+      "Te interesa que comprenda el fondo de las cosas, no solo la respuesta rápida. Cuando el estudiante está ansioso, le ayudas a respirar, ordenar sus ideas y avanzar con calma, un paso a la vez."
+  }
+};
+
+var state = {
+  provider: localStorage.getItem("jubits_provider") || "groq",
+  key: localStorage.getItem("jubits_key") || "",
+  pers: null, history: []
+};
+
+function $(id){ return document.getElementById(id); }
+function show(id){
+  ["screen-key","screen-pick","screen-chat"].forEach(function(s){ $(s).classList.toggle("hidden", s !== id); });
+}
+function setProvider(p){
+  state.provider = p;
+  $("prov-groq").classList.toggle("sel", p === "groq");
+  $("prov-gemini").classList.toggle("sel", p === "gemini");
+  $("key-label").textContent = "2 · " + PROVIDERS[p].label;
+  $("key").placeholder = PROVIDERS[p].placeholder;
+  $("key-hint").innerHTML = PROVIDERS[p].hint;
+  $("key-err").textContent = "";
+}
+function applyColor(){
+  if(state.pers){ document.documentElement.style.setProperty("--acc", PERSONALITIES[state.pers].color); }
+}
+function buildGrid(){
+  var grid = $("pers-grid"); grid.innerHTML = "";
+  Object.keys(PERSONALITIES).forEach(function(k){
+    var p = PERSONALITIES[k];
+    var d = document.createElement("div");
+    d.className = "pers";
+    d.innerHTML = '<img src="' + p.img + '" alt="' + p.name + '">' +
+                  '<div class="name">' + p.name + '</div><div class="trait">' + p.trait + '</div>';
+    d.onmouseover = function(){ d.style.borderColor = p.color; };
+    d.onmouseout = function(){ d.style.borderColor = "var(--borde)"; };
+    d.onclick = function(){ pickPers(k); };
+    grid.appendChild(d);
+  });
+}
+function pickPers(k){
+  state.pers = k; state.history = [];
+  var p = PERSONALITIES[k];
+  applyColor();
+  $("chat-avatar").src = p.img;
+  $("chat-name").textContent = p.name;
+  $("chat-trait").textContent = p.trait;
+  $("msgs").innerHTML = "";
+  addMsg("bot", "Hola, soy " + p.name + ". " + greeting(k));
+  show("screen-chat");
+  $("input").focus();
+}
+function greeting(k){
+  if(k === "pedro") return "Vamos paso a paso: dime qué tema hay que dominar hoy y nos ponemos a ello.";
+  if(k === "mary") return "Qué bueno que estás aquí. Cuéntame qué estás estudiando y lo desmenuzamos con calma.";
+  if(k === "joss") return "¡A explorar! Dime el tema y lo convertimos en algo que sí quieras aprender.";
+  return "Respira. Dime qué te preocupa de tu estudio y lo miramos juntos, sin prisa.";
+}
+function addMsg(who, text){
+  var d = document.createElement("div");
+  d.className = "msg " + who; d.textContent = text;
+  $("msgs").appendChild(d);
+  $("msgs").scrollTop = $("msgs").scrollHeight;
+  return d;
+}
+
+async function askGroq(systemPrompt){
+  var res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + state.key },
+    body: JSON.stringify({
+      model: "llama-3.1-8b-instant", temperature: 0.7,
+      messages: [{ role: "system", content: systemPrompt }].concat(state.history)
+    })
+  });
+  var data = await res.json();
+  if(!res.ok){
+    if(res.status === 401) throw new Error("Tu clave de Groq no es válida. Revísala en «Cambiar clave».");
+    throw new Error((data && data.error && data.error.message) || ("Error " + res.status));
+  }
+  return data.choices[0].message.content;
+}
+
+async function askGemini(systemPrompt){
+  var contents = state.history.map(function(m){
+    return { role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] };
+  });
+  var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": state.key },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: contents,
+      generationConfig: { temperature: 0.7 }
+    })
+  });
+  var data = await res.json();
+  if(!res.ok){
+    var em = (data && data.error && data.error.message) || ("Error " + res.status);
+    if(/API_KEY_INVALID|API key not valid/i.test(em)) throw new Error("Tu clave de Gemini no es válida. Revísala en «Cambiar clave».");
+    throw new Error(em);
+  }
+  return data.candidates[0].content.parts.map(function(p){ return p.text || ""; }).join("");
+}
+
+async function send(){
+  var text = $("input").value.trim();
+  if(!text || !state.pers) return;
+  $("input").value = "";
+  addMsg("user", text);
+  state.history.push({ role: "user", content: text });
+  $("typing").textContent = PERSONALITIES[state.pers].name + " está pensando...";
+  try{
+    var reply = state.provider === "gemini"
+      ? await askGemini(PERSONALITIES[state.pers].prompt)
+      : await askGroq(PERSONALITIES[state.pers].prompt);
+    state.history.push({ role: "assistant", content: reply });
+    addMsg("bot", reply);
+  }catch(e){
+    addMsg("sys", "⚠ " + (e.message || "No hubo conexión. Revisa tu internet e inténtalo de nuevo."));
+    state.history.pop();
+  }
+  $("typing").textContent = "";
+}
+
+$("prov-groq").onclick = function(){ setProvider("groq"); };
+$("prov-gemini").onclick = function(){ setProvider("gemini"); };
+$("btn-key").onclick = function(){
+  var v = $("key").value.trim();
+  var prov = PROVIDERS[state.provider];
+  if(!v || v.indexOf(prov.prefix) !== 0){
+    $("key-err").textContent = "Escribe una clave válida de " + (state.provider === "groq" ? "Groq" : "Gemini") + " (empieza con " + prov.prefix + ").";
+    return;
+  }
+  $("key-err").textContent = "";
+  state.key = v;
+  localStorage.setItem("jubits_key", v);
+  localStorage.setItem("jubits_provider", state.provider);
+  buildGrid(); show("screen-pick");
+};
+$("btn-send").onclick = send;
+$("input").addEventListener("keydown", function(e){ if(e.key === "Enter") send(); });
+$("btn-change-pers").onclick = function(){ buildGrid(); show("screen-pick"); };
+$("btn-change-key").onclick = function(){ setProvider(state.provider); $("key").value = state.key; show("screen-key"); };
+
+setProvider(state.provider);
+if(state.key){ $("key").value = state.key; buildGrid(); show("screen-pick"); } else { show("screen-key"); }
+</script>
+</body>
+</html>
