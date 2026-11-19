@@ -259,13 +259,15 @@ function addMsg(who, text){
   return d;
 }
 function typeMsg(text){
+  var box = $("msgs");
   var d = addMsg("bot", "");
   var i = 0;
   var step = text.length > 900 ? 6 : (text.length > 400 ? 3 : 2);
   var timer = setInterval(function(){
+    var nearBottom = (box.scrollHeight - box.scrollTop - box.clientHeight) < 90;
     i = Math.min(text.length, i + step);
     d.textContent = text.slice(0, i);
-    $("msgs").scrollTop = $("msgs").scrollHeight;
+    if(nearBottom) box.scrollTop = box.scrollHeight;
     if(i >= text.length) clearInterval(timer);
   }, 12);
 }
