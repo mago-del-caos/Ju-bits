@@ -262,6 +262,10 @@ async function groqModelIds(){
   var d = await r.json();
   return (d.data || []).map(function(m){ return m.id; });
 }
+function isTextModel(id){
+  if(/whisper|tts|guard|embed|vision|compound|audio|asr|orpheus|rerank/i.test(id)) return false;
+  return /llama-3\.3|llama-3\.1|llama-4|gpt-oss|qwen|gemma|mixtral|deepseek|kimi/i.test(id);
+}
 function pickGroqModel(ids, exclude){
   var i, id;
   for(i = 0; i < GROQ_PREFS.length; i++){
@@ -270,7 +274,7 @@ function pickGroqModel(ids, exclude){
   }
   for(i = 0; i < ids.length; i++){
     id = ids[i];
-    if(id !== exclude && !/whisper|tts|guard|embed|vision/i.test(id)) return id;
+    if(id !== exclude && isTextModel(id)) return id;
   }
   return "";
 }
