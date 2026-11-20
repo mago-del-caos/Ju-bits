@@ -37,7 +37,8 @@
   .prov small{display:block;font-weight:400;color:var(--texto-claro);font-size:.82rem;margin-top:3px}
   .prov.sel{border-color:var(--ij-azul);background:#EEF3F8}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:8px}
-  .pers{border:3px solid var(--borde);border-radius:16px;padding:18px 12px;text-align:center;cursor:pointer;background:var(--blanco);transition:transform .15s,border-color .15s}
+  .pers{position:relative;overflow:hidden;border:3px solid var(--borde);border-radius:16px;padding:18px 12px;text-align:center;cursor:pointer;background:var(--blanco);transition:transform .15s,border-color .15s}
+  .pers .ribbon{position:absolute;top:22px;right:-42px;transform:rotate(45deg);background:#C1272D;color:#fff;font-size:.64rem;font-weight:700;letter-spacing:.05em;padding:4px 42px;box-shadow:0 2px 6px rgba(0,0,0,.25);text-transform:uppercase;white-space:nowrap}
   .pers:hover{transform:translateY(-3px)}
   .pers img{width:84px;height:84px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block}
   .pers .name{font-weight:800;font-size:1.1rem}
@@ -177,7 +178,8 @@ var PERSONALITIES = {
   },
   adv: {
     name: "Adv", trait: "Paz y tradición decembrina", color: "#C1272D", img: "adv.jpg", font: "'Playfair Display', serif", until: "2027-01-07",
-    desc: "Experto en las festividades y tradiciones católicas de diciembre. Disponible hasta el 7 de enero.",
+    ribbon: "Por tiempo limitado",
+    desc: "Experto en tradiciones de diciembre",
     prompt: BASE + "Tu nombre es Adv, el Ju-bit especial de diciembre. Tu estilo: sereno, alegre y acogedor, como una casa en fiestas. " +
       "Eres experto en las festividades y tradiciones católicas de diciembre y las explicas con cariño y precisión: el Adviento y su corona, la Inmaculada Concepción, la Virgen de Guadalupe, las posadas, las pastorelas, las piñatas de siete picos, la Misa de Gallo, la Nochebuena y la Navidad, los Santos Inocentes, el Año Nuevo, la Epifanía con los Reyes Magos y la rosca. " +
       "Explicas el sentido de cada tradición para quien la vive y para quien la estudia, con respeto y sin imponer creencias. Tu gran deseo es la paz y la armonía del mundo, y lo contagias: ayudas a estudiar con calma y a convivir mejor en familia y en comunidad. " +
@@ -197,6 +199,7 @@ try{ state.profile = JSON.parse(localStorage.getItem("jubits_profile") || "null"
 
 function $(id){ return document.getElementById(id); }
 function show(id){
+  if(id !== "screen-chat") stopMusic();
   ["screen-key","screen-profile","screen-pick","screen-chat"].forEach(function(s){ $(s).classList.toggle("hidden", s !== id); });
 }
 function setProvider(p){
@@ -236,7 +239,8 @@ function buildGrid(){
     if(p.until && new Date() > new Date(p.until + "T23:59:59")) return;
     var d = document.createElement("div");
     d.className = "pers";
-    d.innerHTML = '<img src="' + p.img + '" alt="' + p.name + '">' +
+    d.innerHTML = (p.ribbon ? '<div class="ribbon">' + p.ribbon + '</div>' : '') +
+                  '<img src="' + p.img + '" alt="' + p.name + '">' +
                   '<div class="name">' + p.name + '</div><div class="trait">' + p.trait + '</div>' +
                   (p.desc ? '<div class="desc">' + p.desc + '</div>' : '');
     d.onmouseover = function(){ d.style.borderColor = p.color; };
@@ -256,6 +260,7 @@ function pickPers(k){
   var hola = state.profile ? "¡Hola, " + state.profile.name + "! Soy " + p.name + ". " : "Hola, soy " + p.name + ". ";
   addMsg("bot", hola + greeting(k));
   show("screen-chat");
+  if(k === "adv") startMusic();
   $("input").focus();
 }
 function greeting(k){
@@ -264,6 +269,39 @@ function greeting(k){
   if(k === "joss") return "¡A explorar! Dime el tema y lo convertimos en algo que sí quieras aprender.";
   if(k === "adv") return "¡Qué alegría verte en diciembre! Te ayudo a estudiar y, cuando quieras, te cuento el sentido de las tradiciones de estas fechas: posadas, coronas, nacimientos… todo con calma y en paz.";
   return "Respira. Dime qué te preocupa de tu estudio y lo miramos juntos, sin prisa.";
+}
+var musicCtx = null, musicOn = false, musicTimer = null;
+var MELODY = [[67,3],[69,1],[67,2],[64,6],[67,3],[69,1],[67,2],[64,6],[74,6],[74,2],[71,4],[72,6],[72,2],[67,4],[76,6],[76,2],[72,3],[67,1],[64,2],[67,3],[69,1],[67,2],[64,6],[76,6],[76,2],[72,3],[67,1],[64,2],[67,3],[69,1],[67,2],[64,6],[74,6],[74,2],[77,3],[74,1],[71,2],[72,6],[72,2],[76,4],[72,3],[67,1],[64,2],[67,3],[65,1],[62,2],[60,8],[0,4]];
+function noteFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
+function playNote(m, t, dur){
+  var len = Math.max(dur, 0.9);
+  var o = musicCtx.createOscillator(), o2 = musicCtx.createOscillator();
+  var g = musicCtx.createGain(), g2 = musicCtx.createGain();
+  o.type = "sine"; o.frequency.value = noteFreq(m);
+  o2.type = "triangle"; o2.frequency.value = noteFreq(m) * 2; g2.gain.value = 0.22;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.15, t + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(musicCtx.destination);
+  o.start(t); o2.start(t); o.stop(t + len + 0.1); o2.stop(t + len + 0.1);
+}
+function scheduleMusic(){
+  if(!musicOn || !musicCtx) return;
+  var unit = 0.34, t = musicCtx.currentTime + 0.06, total = 0;
+  MELODY.forEach(function(n){ if(n[0] > 0) playNote(n[0], t + total, n[1] * unit); total += n[1] * unit; });
+  musicTimer = setTimeout(scheduleMusic, (total + 1.4) * 1000);
+}
+function startMusic(){
+  stopMusic();
+  try{
+    musicCtx = musicCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if(musicCtx.state === "suspended") musicCtx.resume();
+    musicOn = true; scheduleMusic();
+  }catch(e){ /* si el navegador no permite audio, el chat sigue funcionando igual */ }
+}
+function stopMusic(){
+  musicOn = false;
+  if(musicTimer){ clearTimeout(musicTimer); musicTimer = null; }
 }
 function addMsg(who, text){
   var d = document.createElement("div");

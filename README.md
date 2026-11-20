@@ -12,7 +12,7 @@ Ju-bits es una versión en miniatura de un tutor con inteligencia artificial par
 | **Vily** | Sabio y meditativo | Amarillo |
 | **Adv** | Paz y tradición decembrina | Rojo navideño |
 
-Adv es el compañero especial de diciembre: experto en las festividades y tradiciones católicas de ese mes, con la descripción «Disponible hasta el 7 de enero»; pasado ese día, su tarjeta deja de mostrarse.
+Adv es el compañero especial de diciembre: experto en tradiciones de diciembre, con banda roja «Por tiempo limitado» en su tarjeta y la descripción «Experto en tradiciones de diciembre»; al entrar a su chat suena una melodía navideña sencilla en bucle, solo en el suyo. Pasado el 7 de enero, su tarjeta deja de mostrarse.
 
 Los cuatro comparten la misma misión: ayudar a **estudiar y entender** — explicar paso a paso, guiar con preguntas y resolver *con* el estudiante, no *por* él — con la identidad y el trato del Instituto Juventud del Estado de México.
 
