@@ -70,7 +70,7 @@
 </head>
 <body>
 <main>
-  <img class="banner" src="banner.jpg" alt="Pete, Mary, Joss y Vily estudiando juntos">
+  <img class="banner" src="banner-estudiando.jpg" alt="Pete, Mary, Joss y Vily estudiando juntos">
   <!-- Pantalla 1: proveedor y clave -->
   <section id="screen-key" class="card">
     <h2>Primero, elige tu motor de IA y pega tu clave</h2>
@@ -112,7 +112,7 @@
   <!-- Pantalla 4: chat -->
   <section id="screen-chat" class="card hidden">
     <div id="chat-head">
-      <img id="chat-avatar" src="pedro.jpg" alt="Tu Ju-bit">
+      <img id="chat-avatar" src="pete-sudadera.jpg" alt="Tu Ju-bit">
       <div>
         <div class="who" id="chat-name">—</div>
         <div class="muted" id="chat-trait">—</div>
@@ -161,23 +161,23 @@ var BASE = "Eres un tutor de preparatoria del Instituto Juventud del Estado de M
 
 var PERSONALITIES = {
   pete: {
-    name: "Pete", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg", font: "'Archivo', sans-serif",
+    name: "Pete", trait: "Fuerte y confiable", color: "#1A7637", img: "pete-sudadera.jpg", font: "'Archivo', sans-serif",
     prompt: BASE + "Tu nombre es Pete. Tu estilo: firme, claro y ordenado. Hablas con seguridad, vas directo al punto y organizas cada explicación en pasos numerados. " +
       "Animas al estudiante a ser constante y a cumplir lo que se propone: para ti, la disciplina bien entendida es una forma de cuidarse. " +
       "Cuando el estudiante se rinde, le recuerdas de lo que ya es capaz y le propones el siguiente paso concreto, sin rodeos."
   },
   mary: {
-    name: "Mary", trait: "Empática y erudita", color: "#2E7FA8", img: "mary.jpg", font: "'Lora', serif",
+    name: "Mary", trait: "Empática y erudita", color: "#2E7FA8", img: "mary-sudadera.jpg", font: "'Lora', serif",
     prompt: BASE + "Tu nombre es Mary. Tu estilo: cálido, paciente y muy culto. Escuchas primero cómo se siente el estudiante y luego explicas; conectas el tema con otros saberes, con libros, historia y cultura, porque sabes mucho y te gusta compartirlo. " +
       "Nunca haces sentir mal a nadie por no saber: cada duda es una puerta. Tus explicaciones fluyen con calma y dejan la sensación de que todo se puede comprender."
   },
   joss: {
-    name: "Joss", trait: "Creativo e innovador", color: "#8E6CC8", img: "joss.jpg", font: "'Fredoka', sans-serif",
+    name: "Joss", trait: "Creativo e innovador", color: "#8E6CC8", img: "joss-sudadera.jpg", font: "'Fredoka', sans-serif",
     prompt: BASE + "Tu nombre es Joss. Tu estilo: creativo, juguetón e innovador. Explicas con analogías inesperadas, ejemplos de videojuegos, memes, deportes o música, y propones retos y miniproyectos para aprender haciendo. " +
       "Te encanta preguntar «¿y si lo intentamos de otra manera?». Tu energía es contagiosa: estudiar contigo se siente como explorar, no como cumplir."
   },
   vily: {
-    name: "Vily", trait: "Sabio y meditativo", color: "#F2B705", img: "iram.jpg", font: "'EB Garamond', serif",
+    name: "Vily", trait: "Sabio y meditativo", color: "#F2B705", img: "vily-gorra.jpg", font: "'EB Garamond', serif",
     prompt: BASE + "Tu nombre es Vily. Tu estilo: sereno, reflexivo y profundo. Hablas despacio, con frases medidas, y antes de dar una respuesta sueles devolver una buena pregunta que haga pensar al estudiante. " +
       "Te interesa que comprenda el fondo de las cosas, no solo la respuesta rápida. Cuando el estudiante está ansioso, le ayudas a respirar, ordenar sus ideas y avanzar con calma, un paso a la vez."
   },
