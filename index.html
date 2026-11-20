@@ -44,6 +44,11 @@
   .pers .name{font-weight:800;font-size:1.1rem}
   .pers .trait{color:var(--texto-claro);font-size:.88rem;margin-top:2px}
   .pers .desc{color:var(--texto-claro);font-size:.78rem;margin-top:6px;line-height:1.35}
+  #screen-chat{position:relative}
+  #adv-frame{position:absolute;inset:0;pointer-events:none;z-index:6}
+  #adv-frame .bulbA{animation:twinkle 1s ease-in-out infinite alternate}
+  #adv-frame .bulbB{animation:twinkle 1s ease-in-out infinite alternate;animation-delay:.5s}
+  @keyframes twinkle{from{opacity:.4}to{opacity:1}}
   .hidden{display:none!important}
   #chat-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   #chat-head img{width:52px;height:52px;border-radius:50%;object-fit:cover}
@@ -107,6 +112,7 @@
 
   <!-- Pantalla 4: chat -->
   <section id="screen-chat" class="card hidden">
+    <div id="adv-frame" class="hidden"></div>
     <div id="chat-head">
       <img id="chat-avatar" src="pedro.jpg" alt="Tu Ju-bit">
       <div>
@@ -260,7 +266,8 @@ function pickPers(k){
   var hola = state.profile ? "¡Hola, " + state.profile.name + "! Soy " + p.name + ". " : "Hola, soy " + p.name + ". ";
   addMsg("bot", hola + greeting(k));
   show("screen-chat");
-  if(k === "adv") startMusic();
+  if(k === "adv"){ $("adv-frame").classList.remove("hidden"); buildLights(); startMusic(); }
+  else $("adv-frame").classList.add("hidden");
   $("input").focus();
 }
 function greeting(k){
@@ -302,6 +309,59 @@ function startMusic(){
 function stopMusic(){
   musicOn = false;
   if(musicTimer){ clearTimeout(musicTimer); musicTimer = null; }
+}
+function buildLights(){
+  var frame = $("adv-frame"), sec = $("screen-chat");
+  var w = sec.clientWidth, h = sec.clientHeight;
+  frame.innerHTML = "";
+  if(!w || !h) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+  svg.setAttribute("width", "100%"); svg.setAttribute("height", "100%");
+  svg.style.display = "block";
+  var pts = [];
+  function wire(d){
+    var p = document.createElementNS(NS, "path");
+    p.setAttribute("d", d); p.setAttribute("fill", "none");
+    p.setAttribute("stroke", "#2E4A2E"); p.setAttribute("stroke-width", "1.6");
+    svg.appendChild(p);
+  }
+  function swag(x0, y0, cx, cy, x1, y1){
+    wire("M " + x0 + " " + y0 + " Q " + cx + " " + cy + " " + x1 + " " + y1);
+    var len = Math.hypot(x1 - x0, y1 - y0) + Math.abs(cy - y0);
+    var steps = Math.max(2, Math.round(len / 36));
+    for(var i = 0; i <= steps; i++){
+      var t = (i + 0.5) / (steps + 1), u = 1 - t;
+      pts.push([u*u*x0 + 2*u*t*cx + t*t*x1, u*u*y0 + 2*u*t*cy + t*t*y1]);
+    }
+  }
+  var i, n, seg;
+  n = Math.max(3, Math.round(w / 180)); seg = w / n;
+  for(i = 0; i < n; i++) swag(i * seg, 9, (i + 0.5) * seg, 9 + 44, (i + 1) * seg, 9);
+  n = Math.max(2, Math.round(h / 130)); seg = h / n;
+  for(i = 0; i < n; i++) swag(w - 9, i * seg, w - 9 - 30, (i + 0.5) * seg, w - 9, (i + 1) * seg);
+  n = Math.max(3, Math.round(w / 180)); seg = w / n;
+  for(i = n - 1; i >= 0; i--) swag((i + 1) * seg, h - 9, (i + 0.5) * seg, h - 9 - 44, i * seg, h - 9);
+  n = Math.max(2, Math.round(h / 130)); seg = h / n;
+  for(i = n - 1; i >= 0; i--) swag(9, (i + 1) * seg, 9 + 30, (i + 0.5) * seg, 9, i * seg);
+  pts.forEach(function(pt, idx){
+    var red = idx % 2 === 0, c = red ? "#E53935" : "#43A047";
+    var g = document.createElementNS(NS, "g");
+    g.setAttribute("class", red ? "bulbA" : "bulbB");
+    var halo = document.createElementNS(NS, "circle");
+    halo.setAttribute("cx", pt[0]); halo.setAttribute("cy", pt[1]); halo.setAttribute("r", 9);
+    halo.setAttribute("fill", c); halo.setAttribute("opacity", "0.30");
+    var core = document.createElementNS(NS, "circle");
+    core.setAttribute("cx", pt[0]); core.setAttribute("cy", pt[1]); core.setAttribute("r", 4.6);
+    core.setAttribute("fill", c); core.setAttribute("stroke", "rgba(0,0,0,.18)"); core.setAttribute("stroke-width", "0.6");
+    var hi = document.createElementNS(NS, "circle");
+    hi.setAttribute("cx", pt[0] - 1.4); hi.setAttribute("cy", pt[1] - 1.4); hi.setAttribute("r", 1.5);
+    hi.setAttribute("fill", "#fff"); hi.setAttribute("opacity", "0.85");
+    g.appendChild(halo); g.appendChild(core); g.appendChild(hi);
+    svg.appendChild(g);
+  });
+  frame.appendChild(svg);
 }
 function addMsg(who, text){
   var d = document.createElement("div");
@@ -560,6 +620,7 @@ $("btn-profile").onclick = function(){
 $("btn-send").onclick = send;
 $("input").addEventListener("keydown", function(e){ if(e.key === "Enter") send(); });
 $("btn-change-pers").onclick = function(){ buildGrid(); show("screen-pick"); };
+window.addEventListener("resize", function(){ if(state.pers === "adv" && !$("screen-chat").classList.contains("hidden")) buildLights(); });
 $("btn-profile-edit").onclick = function(){
   if(state.profile){ $("prof-name").value = state.profile.name; $("prof-interests").value = state.profile.interests; }
   show("screen-profile");
