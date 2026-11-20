@@ -6,10 +6,13 @@ Ju-bits es una versión en miniatura de un tutor con inteligencia artificial par
 
 | Compañero | Personalidad | Color |
 |---|---|---|
-| **Pitros** | Fuerte y confiable | Verde |
+| **Pete** | Fuerte y confiable | Verde |
 | **Mary** | Empática y erudita | Azul |
 | **Joss** | Creativo e innovador | Violeta |
-| **Iram** | Sabio y meditativo | Amarillo |
+| **Vily** | Sabio y meditativo | Amarillo |
+| **Adv** | Paz y tradición decembrina | Rojo navideño |
+
+Adv es el compañero especial de diciembre: experto en las festividades y tradiciones católicas de ese mes, con la descripción «Disponible hasta el 7 de enero»; pasado ese día, su tarjeta deja de mostrarse.
 
 Los cuatro comparten la misma misión: ayudar a **estudiar y entender** — explicar paso a paso, guiar con preguntas y resolver *con* el estudiante, no *por* él — con la identidad y el trato del Instituto Juventud del Estado de México.
 
@@ -19,7 +22,7 @@ Los cuatro comparten la misma misión: ayudar a **estudiar y entender** — expl
 2. Elige tu motor: **Groq** o **Gemini**, y pega tu clave. ¿No tienes? Es gratis en ambos casos:
    - Groq: [console.groq.com/keys](https://console.groq.com/keys) — crea tu cuenta, pulsa **Create API Key** y cópiala (empieza con `gsk_`).
    - Gemini: [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — entra con tu cuenta de Google, pulsa **Create API key** y cópiala (empieza con `AIza`).
-3. Elige a tu compañero: Pitros, Mary, Joss o Iram.
+3. Elige a tu compañero: Pete, Mary, Joss o Vily (y en diciembre, también Adv).
 4. Escribe tu duda o el tema que quieres estudiar.
 
 ## Privacidad

@@ -6,7 +6,7 @@
 <title>Ju-bits · Instituto Juventud del Estado de México</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=EB+Garamond:ital@0;1&family=Fredoka:wght@500;600&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=EB+Garamond:ital@0;1&family=Fredoka:wght@500;600&family=Lora:ital@0;1&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root{
     --ij-azul:#032A60; --ij-celeste:#00A8FF; --fondo:#F5F7FA; --blanco:#FFFFFF;
@@ -42,6 +42,7 @@
   .pers img{width:84px;height:84px;border-radius:50%;object-fit:cover;margin:0 auto 10px;display:block}
   .pers .name{font-weight:800;font-size:1.1rem}
   .pers .trait{color:var(--texto-claro);font-size:.88rem;margin-top:2px}
+  .pers .desc{color:var(--texto-claro);font-size:.78rem;margin-top:6px;line-height:1.35}
   .hidden{display:none!important}
   #chat-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   #chat-head img{width:52px;height:52px;border-radius:50%;object-fit:cover}
@@ -64,7 +65,7 @@
 </head>
 <body>
 <main>
-  <img class="banner" src="banner.jpg" alt="Pitros, Mary, Joss e Iram estudiando juntos">
+  <img class="banner" src="banner.jpg" alt="Pete, Mary, Joss y Vily estudiando juntos">
   <!-- Pantalla 1: proveedor y clave -->
   <section id="screen-key" class="card">
     <h2>Primero, elige tu motor de IA y pega tu clave</h2>
@@ -153,9 +154,9 @@ var BASE = "Eres un tutor de preparatoria del Instituto Juventud del Estado de M
   "Cuando el estudiante haga un buen trabajo, reconócelo; cuando falle, corrígelo con cariño y muéstrale cómo mejorar. ";
 
 var PERSONALITIES = {
-  pitros: {
-    name: "Pitros", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg", font: "'Archivo', sans-serif",
-    prompt: BASE + "Tu nombre es Pitros. Tu estilo: firme, claro y ordenado. Hablas con seguridad, vas directo al punto y organizas cada explicación en pasos numerados. " +
+  pete: {
+    name: "Pete", trait: "Fuerte y confiable", color: "#1A7637", img: "pedro.jpg", font: "'Archivo', sans-serif",
+    prompt: BASE + "Tu nombre es Pete. Tu estilo: firme, claro y ordenado. Hablas con seguridad, vas directo al punto y organizas cada explicación en pasos numerados. " +
       "Animas al estudiante a ser constante y a cumplir lo que se propone: para ti, la disciplina bien entendida es una forma de cuidarse. " +
       "Cuando el estudiante se rinde, le recuerdas de lo que ya es capaz y le propones el siguiente paso concreto, sin rodeos."
   },
@@ -169,10 +170,18 @@ var PERSONALITIES = {
     prompt: BASE + "Tu nombre es Joss. Tu estilo: creativo, juguetón e innovador. Explicas con analogías inesperadas, ejemplos de videojuegos, memes, deportes o música, y propones retos y miniproyectos para aprender haciendo. " +
       "Te encanta preguntar «¿y si lo intentamos de otra manera?». Tu energía es contagiosa: estudiar contigo se siente como explorar, no como cumplir."
   },
-  iram: {
-    name: "Iram", trait: "Sabio y meditativo", color: "#F2B705", img: "iram.jpg", font: "'EB Garamond', serif",
-    prompt: BASE + "Tu nombre es Iram. Tu estilo: sereno, reflexivo y profundo. Hablas despacio, con frases medidas, y antes de dar una respuesta sueles devolver una buena pregunta que haga pensar al estudiante. " +
+  vily: {
+    name: "Vily", trait: "Sabio y meditativo", color: "#F2B705", img: "iram.jpg", font: "'EB Garamond', serif",
+    prompt: BASE + "Tu nombre es Vily. Tu estilo: sereno, reflexivo y profundo. Hablas despacio, con frases medidas, y antes de dar una respuesta sueles devolver una buena pregunta que haga pensar al estudiante. " +
       "Te interesa que comprenda el fondo de las cosas, no solo la respuesta rápida. Cuando el estudiante está ansioso, le ayudas a respirar, ordenar sus ideas y avanzar con calma, un paso a la vez."
+  },
+  adv: {
+    name: "Adv", trait: "Paz y tradición decembrina", color: "#C1272D", img: "adv.jpg", font: "'Playfair Display', serif", until: "2027-01-07",
+    desc: "Experto en las festividades y tradiciones católicas de diciembre. Disponible hasta el 7 de enero.",
+    prompt: BASE + "Tu nombre es Adv, el Ju-bit especial de diciembre. Tu estilo: sereno, alegre y acogedor, como una casa en fiestas. " +
+      "Eres experto en las festividades y tradiciones católicas de diciembre y las explicas con cariño y precisión: el Adviento y su corona, la Inmaculada Concepción, la Virgen de Guadalupe, las posadas, las pastorelas, las piñatas de siete picos, la Misa de Gallo, la Nochebuena y la Navidad, los Santos Inocentes, el Año Nuevo, la Epifanía con los Reyes Magos y la rosca. " +
+      "Explicas el sentido de cada tradición para quien la vive y para quien la estudia, con respeto y sin imponer creencias. Tu gran deseo es la paz y la armonía del mundo, y lo contagias: ayudas a estudiar con calma y a convivir mejor en familia y en comunidad. " +
+      "También ayudas a estudiar cualquier tema, conectándolo cuando venga al caso con el espíritu de estas fechas: gratitud, generosidad y esperanza."
   }
 };
 
@@ -224,10 +233,12 @@ function buildGrid(){
   var grid = $("pers-grid"); grid.innerHTML = "";
   Object.keys(PERSONALITIES).forEach(function(k){
     var p = PERSONALITIES[k];
+    if(p.until && new Date() > new Date(p.until + "T23:59:59")) return;
     var d = document.createElement("div");
     d.className = "pers";
     d.innerHTML = '<img src="' + p.img + '" alt="' + p.name + '">' +
-                  '<div class="name">' + p.name + '</div><div class="trait">' + p.trait + '</div>';
+                  '<div class="name">' + p.name + '</div><div class="trait">' + p.trait + '</div>' +
+                  (p.desc ? '<div class="desc">' + p.desc + '</div>' : '');
     d.onmouseover = function(){ d.style.borderColor = p.color; };
     d.onmouseout = function(){ d.style.borderColor = "var(--borde)"; };
     d.onclick = function(){ pickPers(k); };
@@ -248,9 +259,10 @@ function pickPers(k){
   $("input").focus();
 }
 function greeting(k){
-  if(k === "pitros") return "Vamos paso a paso: dime qué tema hay que dominar hoy y nos ponemos a ello.";
+  if(k === "pete") return "Vamos paso a paso: dime qué tema hay que dominar hoy y nos ponemos a ello.";
   if(k === "mary") return "Qué bueno que estás aquí. Cuéntame qué estás estudiando y lo desmenuzamos con calma.";
   if(k === "joss") return "¡A explorar! Dime el tema y lo convertimos en algo que sí quieras aprender.";
+  if(k === "adv") return "¡Qué alegría verte en diciembre! Te ayudo a estudiar y, cuando quieras, te cuento el sentido de las tradiciones de estas fechas: posadas, coronas, nacimientos… todo con calma y en paz.";
   return "Respira. Dime qué te preocupa de tu estudio y lo miramos juntos, sin prisa.";
 }
 function addMsg(who, text){
