@@ -44,8 +44,7 @@
   .pers .name{font-weight:800;font-size:1.1rem}
   .pers .trait{color:var(--texto-claro);font-size:.88rem;margin-top:2px}
   .pers .desc{color:var(--texto-claro);font-size:.78rem;margin-top:6px;line-height:1.35}
-  #screen-chat{position:relative}
-  #adv-frame{position:absolute;inset:0;pointer-events:none;z-index:6}
+  #adv-frame{position:fixed;inset:0;pointer-events:none;z-index:60}
   #adv-frame .bulbA{animation:twinkle 1s ease-in-out infinite alternate}
   #adv-frame .bulbB{animation:twinkle 1s ease-in-out infinite alternate;animation-delay:.5s}
   @keyframes twinkle{from{opacity:.4}to{opacity:1}}
@@ -112,7 +111,6 @@
 
   <!-- Pantalla 4: chat -->
   <section id="screen-chat" class="card hidden">
-    <div id="adv-frame" class="hidden"></div>
     <div id="chat-head">
       <img id="chat-avatar" src="pedro.jpg" alt="Tu Ju-bit">
       <div>
@@ -133,6 +131,7 @@
       <button id="btn-send">Enviar</button>
     </div>
   </section>
+<div id="adv-frame" class="hidden"></div>
 </main>
 
 <footer>Ju-bits · Proyecto educativo del Instituto Juventud del Estado de México · Construirse es construir el mundo.</footer>
@@ -311,8 +310,8 @@ function stopMusic(){
   if(musicTimer){ clearTimeout(musicTimer); musicTimer = null; }
 }
 function buildLights(){
-  var frame = $("adv-frame"), sec = $("screen-chat");
-  var w = sec.clientWidth, h = sec.clientHeight;
+  var frame = $("adv-frame");
+  var w = window.innerWidth, h = window.innerHeight;
   frame.innerHTML = "";
   if(!w || !h) return;
   var NS = "http://www.w3.org/2000/svg";
